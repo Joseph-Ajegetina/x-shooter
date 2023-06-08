@@ -10,6 +10,7 @@
     <title>X Shooter</title>
 
     <link rel="stylesheet" href="css/style.css" />
+    <script src="js/game.js"></script>
     <script src="js/main.js"></script>
 </head>
 <body>
@@ -26,15 +27,25 @@
             <h1>High Scores</h1>
             <a class="back-button" href="#">Menu</a>
             <ul id="scores-ul">
-
             </ul>
         </div>
         <div id="about-page">
+            <h1>About X-Shooter</h1>
+            <a class="back-button" href="#">Menu</a>
+            <h2>HOW TO PLAY</h2>
+            <p>
+                The arrow keys can be used to control the rocket, movement from left to right;
+                Use the spacebar to shoot the aliens
+            </p>
         </div>
         <canvas id="canvas" width="600" height="700">
           
         </canvas>
         <div id="game-over-box">
+            <h1>Game Over</h1>
+            <p id="game-over-p">Score: <span id="score-field"></span></p>
+            <input type="text" id="name-field" name="name-field" placeholder="Your name" pattern="^[a-zA-Z]+$" />
+            <input type="button" id="exit-button" name="exit-button" value="Exit" />
         </div>
     </div>
 </body>
