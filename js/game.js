@@ -27,28 +27,44 @@ class Game {
     this.powerUps = [];
     this.enemies = [];
 
+    this.collisionManager = new CollisionManager(this);
     this.scorePanel = new ScorePanel(this);
+
 
     this.inputController.keyListener();
   }
 
   run() {
-    this.frameId = window.requestAnimationFrame(this.run);
+    this.frameId = window.requestAnimationFrame(this.run.bind(this));
 
     this.currentTime = new Date().getTime();
     this.delta = this.currentTime - this.lastTime;
 
+    if (this.delta > this.interval) {
+      if (!this.isPaused) {
+        this.update(this.delta);
+        this.collisionManager.resolveCollision(this.delta);
+      }
 
-    this.render();
+      if (this.spaceship.livesRemaining < 0) {
+        this.gameOver();
+      }
 
-    this.lastTime = this.currentTime - (this.delta % this.interval);
+      this.render();
 
+      this.lastTime = this.currentTime - (this.delta % this.interval);
+    }
   };
 
-  render(){
+  render() {
     this.background.draw(this.context);
     this.spaceship.draw(this.context);
     this.scorePanel.draw(this.context);
+  }
+
+  update(delta) {
+    this.background.update();
+    this.spaceship.update(delta);
   }
 }
 
@@ -57,6 +73,7 @@ class SpaceShip {
   constructor(canvas, controller, assets) {
     this.canvas = canvas;
     this.controller = controller;
+
     this.assets = assets;
 
     this.width = 60;
@@ -67,6 +84,7 @@ class SpaceShip {
     this.xv = 0;
     this.yv = 0;
     this.maxVelocity = 100;
+    this.accelerateFactor = 2;
 
 
     // collisions with walls detection
@@ -94,9 +112,14 @@ class SpaceShip {
     this.score = 0;
   }
 
+  draw(ctx) {
+    ctx.drawImage(this.assets.images["spacecraft"], this.x,
+      this.y, this.width, this.height);
+  }
+
   update() {
     this.slowDown();
-    this.updateDirection();
+    this.newPos();
 
     this.y += (this.yv / 10);
     this.x += (this.xv / 10);
@@ -113,75 +136,73 @@ class SpaceShip {
     }
 
     // slow down when going up
-    if (this.yv < 0 && !this.inputManager.keys[ArrowUp]) {
+    if (this.yv < 0 && !this.controller.keys.ArrowUp) {
       this.yv += this.accelerateFactor;
     }
 
     // slow down when going down
-    if (this.yv > 0 && !this.inputManager.keys[ArrowDown]) {
+    if (this.yv > 0 && !this.controller.keys.ArrowDown) {
       this.yv -= this.accelerateFactor;
     }
 
     // slow down when going right
-    if (this.xv > 0 && !this.inputManager.keys[ArrowRight]) {
+    if (this.xv > 0 && !this.controller.keys.ArrowRight) {
       this.xv -= this.accelerateFactor;
     }
 
     // slow down when going left
-    if (this.xv < 0 && !this.inputManager.keys[ArrowLeft]) {
+    if (this.xv < 0 && !this.controller.keys.ArrowLeft) {
       this.xv += this.accelerateFactor;
     }
   }
 
   newPos() {
     // start moving up
-    if (this.inputManager.keys[ArrowUp] && this.yv === 0 && !this.isUpWall) {
+    if (this.controller.keys.ArrowUp && this.yv === 0 && !this.isUpWall) {
       this.yv -= this.accelerateFactor;
       this.isDownWall = false;
     }
 
     // accelerate further up
-    if (this.inputManager.keys[ArrowUp] && (Math.abs(this.yv) <= this.maxVelocity)) {
+    if (this.controller.keys.ArrowUp && (Math.abs(this.yv) <= this.maxVelocity)) {
       this.yv -= this.accelerateFactor;
     }
 
     // start moving down
-    if (this.inputManager.keys[ArrowDown] && this.yv === 0 && !this.isDownWall) {
+    if (this.controller.keys.ArrowDown && this.yv === 0 && !this.isDownWall) {
       this.yv += this.accelerateFactor;
       this.isUpWall = false;
     }
 
     // accelerate further down
-    if (this.inputManager.keys[ArrowDown] && (Math.abs(this.yv) <= this.maxVelocity)) {
-      this.yVelocity += this.accelerateFactor;
+    if (this.controller.keys.ArrowDown && (Math.abs(this.yv) <= this.maxVelocity)) {
+      this.yv += this.accelerateFactor;
     }
 
     // start moving right
-    if (this.inputManager.keys[ArrowRight] && this.xv === 0 && !this.isRightWall) {
+    if (this.controller.keys.ArrowRight && this.xv === 0 && !this.isRightWall) {
       this.xv += this.accelerateFactor;
       this.isLeftWall = false;
     }
 
     // accelerate further right
-    if (this.inputManager.keys[ArrowRight] && (Math.abs(this.xv) <= this.maxVelocity)) {
+    if (this.controller.keys.ArrowRight && (Math.abs(this.xv) <= this.maxVelocity)) {
       this.xv += this.accelerateFactor;
     }
 
     // start moving left
-    if (this.inputManager.keys[ArrowLeft] && this.xv === 0 && !this.isLeftWall) {
+    if (this.controller.keys.ArrowLeft && this.xv === 0 && !this.isLeftWall) {
       this.xv -= this.accelerateFactor;
       this.isRightWall = false;
     }
 
     // accelerate further left
-    if (this.inputManager.keys[ArrowLeft] && (Math.abs(this.xv) <= this.maxVelocity)) {
+    if (this.controller.keys.ArrowLeft && (Math.abs(this.xv) <= this.maxVelocity)) {
       this.xv -= this.accelerateFactor;
     }
   }
 
 }
-
-
 
 
 class ScorePanel {
@@ -195,7 +216,7 @@ class ScorePanel {
   draw(ctx) {
     ctx.fillStyle = "#f2f2f2";
     ctx.font = "20px kenvector_future_thin";
-    ctx.fillText(this.spacecraft.livesRemaining, 540, 30);
+    ctx.fillText(this.spaceship.livesRemaining, 540, 30);
     ctx.drawImage(this.assetsManager.images["livesRemaining"], 555, 10);
 
     ctx.fillText("Score: " + this.spaceship.score, 10, 28);
@@ -231,7 +252,7 @@ class Background {
   }
 
   draw(ctx) {
-    ctx.drawImage(this.assets.images['backgroung'], this.x, this.y);
+    ctx.drawImage(this.assets.images['background'], this.x, this.y);
     ctx.drawImage(this.assets.images['background'], this.x, this.y - this.canvas.height)
   }
 };
@@ -239,7 +260,12 @@ class Background {
 
 class InputController {
   constructor() {
-    this.keys = []
+    this.keys = {
+      ArrowUp: false,
+      ArrowDown: false,
+      ArrowLeft: false,
+      ArrowRight: false
+    }
   }
 
   keyListener() {
@@ -357,5 +383,46 @@ class AssetsManager {
     this.sounds["explosion"] = new Audio("assets/Bonus/explodemini.wav");
   }
 
+
+}
+
+
+class CollisionManager {
+  constructor(game) {
+    this.game = game;
+    this.spaceship = game.spaceship;
+    this.collisionDelayTimer = 0;
+  }
+
+  resolveCollision(delta) {
+    this.collisionDelayTimer += delta;
+    this.shipWithWall();
+  }
+
+  shipWithWall() {
+    if (this.spaceship.x < 5) {
+      this.spaceship.xv = 0;
+      this.spaceship.isLeftWall = true;
+      this.spaceship.x = 5;
+    }
+
+    if (this.spaceship.x + this.spaceship.width + 5 > this.game.canvas.width) {
+      this.spaceship.xv = 0;
+      this.spaceship.isRightWall = true;
+      this.spaceship.x = this.game.canvas.width - this.spaceship.width - 5;
+    }
+
+    if (this.spaceship.y < 5) {
+      this.spaceship.yv = 0;
+      this.spaceship.isUpWall = true;
+      this.spaceship.y = 5;
+    }
+
+    if (this.spaceship.y + this.spaceship.height + 5 > this.game.canvas.height) {
+      this.spaceship.yv = 0;
+      this.spaceship.isDownWall = true;
+      this.spaceship.y = this.game.canvas.height - this.spaceship.height - 5;
+    }
+  }
 
 }
