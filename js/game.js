@@ -149,10 +149,10 @@ class SpaceShip {
     // fire normal bullet every second, powered up bullet every 0.3 second
     this.bulletDelayTimer += delta;
 
-    if (!this.isBoltPower && this.bulletDelayTimer > 1000) {
+    if (this.controller.keys['Space'] && !this.isBoltPower && this.bulletDelayTimer > 500) {
       this.shoot("blue");
       this.bulletDelayTimer = 0;
-    } else if (this.isBoltPower && this.bulletDelayTimer > 300) {
+    } else if (this.controller.keys['Space'] &&  this.isBoltPower && this.bulletDelayTimer > 300) {
       this.shoot("green");
       this.bulletDelayTimer = 0;
     }
@@ -431,7 +431,8 @@ class InputController {
       ArrowUp: false,
       ArrowDown: false,
       ArrowLeft: false,
-      ArrowRight: false
+      ArrowRight: false,
+      Space: false
     }
   }
 
@@ -439,12 +440,28 @@ class InputController {
     // For key press down
     document.addEventListener('keydown', (event) => {
       const key = event.key
-      this.keys[key] = true;
+      const code = event.code;
+
+      if(key){
+        this.keys[key] = true;
+      }
+
+      if(code === 'Space'){
+        this.keys[code] = true;
+      }
+ 
     });
 
     document.addEventListener('keyup', (event) => {
       const key = event.key;
-      this.keys[key] = false;
+      const code = event.code;
+      if(key){
+        this.keys[key] = false;
+      }
+
+      if(code === 'Space'){
+        this.keys[code] = false;
+      }
     })
   }
 }
@@ -618,7 +635,7 @@ class GamePlayManager {
   }
 
   update(delta) {
-    this.spawnEnemies(delta);
+    this.spawnAliens(delta);
 
     // clean up every 15 seconds 
     this.cleanUpDelayTimer += delta;
@@ -637,7 +654,7 @@ class GamePlayManager {
     this.increaseDifficulty(delta);
   }
 
-  spawnEnemies(delta) {
+  spawnAliens(delta) {
     this.aliensSpawnDelayTimer += delta;
 
     if (this.aliensSpawnDelayTimer > this.aliensSpawnDelay) {
@@ -753,7 +770,7 @@ class Alien {
   }
 
 
-  update() {
+  update(delta) {
     if (this.isExploded && (this.type === "enemyBlue" || this.type === "enemyRed")) {
       return;
     } else if (this.isExploded && this.bullets.length !== 0) {
@@ -783,7 +800,7 @@ class Alien {
       this.bulletDelayTimer += delta;
 
       if (this.bulletDelayTimer > 1000) {
-        this.fire();
+        this.shoot();
         this.bulletDelayTimer = 0;
       }
 
@@ -841,7 +858,6 @@ class Alien {
 
     // start moving down
     if (this.goDown && this.yv === 0) {
-      console.log('going down ')
       this.yv += this.accelerateFactor;
     }
 
@@ -894,12 +910,11 @@ class Alien {
     }
   }
 
-  bulletsCleanUp() {
+  bulletsCleanUp(delta) {
     // every 10 seconds remove bullets that are off the screen
     this.bulletCleanUpDelayTimer += delta;
 
     if (this.bulletCleanUpDelayTimer > 10000) {
-      //console.log("Before: " + this.bullets.length);
       for (var i = 0; i < this.bullets.length; i++) {
         if (this.bullets[i].y > 1000 || this.bullets[i].isExploded) {
           this.bullets.splice(i, 1);
@@ -907,7 +922,6 @@ class Alien {
         }
       }
 
-      //console.log("After: " + this.bullets.length);
       this.bulletCleanUpDelayTimer = 0;
     }
   }
@@ -951,7 +965,7 @@ class Alien {
       this.goDown = true;
       this.behaviourStarted = true;
   } else {
-      if (this.yPosition < this.initialDescentDistance) {
+      if (this.y < this.initialDescentDistance) {
           return;
       }
 
@@ -972,9 +986,9 @@ class Alien {
     if (!this.behaviourStarted) {
       this.goDown = true;
       this.behaviourStarted = true;
-  } else if (this.yPosition > 0) {
+  } else if (this.y > 0) {
       // stop shooting after leaving the screen
-      if (this.yPosition >= 700) {
+      if (this.y >= 700) {
           this.startFire = false;
       } else {
           this.startFire = true;
@@ -987,7 +1001,7 @@ class Alien {
       this.goDown = true;
       this.behaviourStarted = true;
   } else {
-      if (this.yPosition > 0) {
+      if (this.y > 0) {
           this.startFire = true;
       }
 
@@ -1053,16 +1067,16 @@ class Alien {
     this.bullets.push(new Bullet(this.x + (this.width / 2) - (14 / 2),
       this.y + this.height / 2, "red", this.assets));
 
-    this.assets.audios["laserEnemy"].play();
-    this.assets.audios["laserEnemy"].currentTime = 0;
+    this.assets.sounds["laserEnemy"].play();
+    this.assets.sounds["laserEnemy"].currentTime = 0;
   }
 
   explode(){
     this.isExploding = true;
     this.startFire = false;
 
-    this.assets.audios["explosion"].play();
-    this.assets.audios["explosion"].currentTime = 0;
+    this.assets.sounds["explosion"].play();
+    this.assets.sounds["explosion"].currentTime = 0;
   }
 
   isHit(){
