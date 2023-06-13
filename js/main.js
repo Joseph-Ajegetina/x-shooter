@@ -72,8 +72,8 @@ document.addEventListener('DOMContentLoaded', function () {
     exitBtn.addEventListener('click', () => {
 
         const nameElem = document.querySelector('#name-field');
-        const value = nameElem.innerHTML;
-        const playerName = value ? "No Name" : value;
+        const value = nameElem.value;
+        const playerName = !value ? "No Name" : value;
 
         const scoreElem = document.querySelector('#score-field');
         const points = scoreElem.innerHTML;
@@ -134,10 +134,12 @@ function getButtonElement(name) {
 
 function displayScores(scores) {
     const MAX_SCORES = 10;
-    const scoresParent = document.getElementById('scoresParent');
+    const scoresParent = document.querySelector('#scores-ul');
 
     scores.slice(0, MAX_SCORES).forEach(score => {
-        const scoreItemHtml = `<li> ${score.name} : <span class='light-grey'> ${score.points}</span></li>`;
-        scoresParent.appendChild(scoreItemHtml);
+        const childElem = document.createElement('li')
+        childElem.innerHTML = `${score.name} : <span class='light-grey'> ${score.points}</span>`
+
+        scoresParent.appendChild(childElem);
     });
 };

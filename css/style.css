@@ -1,5 +1,6 @@
 body {
-  background: url("../assets/img/background.jpeg") repeat;
+  background: url("../assets/Backgrounds/background.jpeg") repeat;
+  margin: 0;
 }
 
 #menu-page, #high-scores-page, #about-page, #canvas, #game-over-box {
@@ -66,4 +67,28 @@ a:hover {
 
 .back-button {
   font-size: 2.5 rem;
+}
+
+#game-canvas {
+  display: none;
+}
+
+#splash-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: url("../assets/Backgrounds/background.jpeg") repeat;
+}
+
+h1 {
+  color: white;
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+#start-button {
+  padding: 10px 20px;
+  font-size: 24px;
 }

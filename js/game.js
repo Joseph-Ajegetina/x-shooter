@@ -7,6 +7,7 @@ class Game {
     // loading resources need for the game to run
     this.assets = new AssetsManager();
     this.assets.loadAll();
+    
     // game controls 
     this.inputController = new InputController();
 
@@ -60,7 +61,7 @@ class Game {
     this.spaceship.draw(this.context);
     this.scorePanel.draw(this.context);
 
-    // drawing the aliens and adding powerups
+    // drawing the aliens 
     for (let i = 0; i < this.aliens.length; i++) {
       this.aliens[i].draw(this.context);
     }
@@ -76,6 +77,23 @@ class Game {
       this.aliens[i].update(delta);
   }
   }
+
+  gameOver() {
+    window.cancelAnimationFrame(this.frameId);
+
+    this.assets.sounds["gameOver"].play();
+    this.assets.sounds["gameOver"].currentTime = 0;
+
+    const scoreElem = document.querySelector("#score-field");
+    scoreElem.innerHTML = this.spaceship.score
+
+    const gameOverElem = document.querySelector('#game-over-box');
+    gameOverElem.className = "show";
+
+    // clear the screen to avoid a lag at the start of the next game
+    this.new();
+};
+
 }
 
 
@@ -300,12 +318,12 @@ class Bullet {
     this.isExploding = true;
   }
 
-  impact() {
-    this.isExploded || this.isExploding
+  hasFire() {
+    return this.isExploded || this.isExploding
   }
 
 
-  update() {
+  update(delta) {
     if (this.isExploded) {
       return;
     }
@@ -469,119 +487,95 @@ class InputController {
 
 class AssetsManager {
   constructor() {
-    this.images = [];
-    this.sounds = []
+    this.images = {};
+    this.sounds = {};
   }
 
   loadAll() {
-    this.images["spaceship"] = new Image();
-    this.images["spaceship"].src = "assets/PNG/playership.png";
+    // Load images
+    this.loadImage("spaceship", "assets/PNG/playership.png");
+    this.loadImage("spacecraftSmallDamage", "assets/PNG/Damage/playerShip2_damage1.png");
+    this.loadImage("spacecraftMediumDamage", "assets/PNG/Damage/playerShip2_damage2.png");
+    this.loadImage("spacecraftBigDamage", "assets/PNG/Damage/playerShip2_damage3.png");
+    this.loadImage("shield1", "assets/PNG/Effects/shield1.png");
+    this.loadImage("shield2", "assets/PNG/Effects/shield2.png");
+    this.loadImage("shield3", "assets/PNG/Effects/shield3.png");
+    this.loadImage("background", "assets/Backgrounds/blueBig.png");
+    this.loadImage("laserBlue1", "assets/PNG/Lasers/laserBlue02.png");
+    this.loadImage("laserBlue2", "assets/PNG/Lasers/laserBlue06.png");
+    this.loadImage("laserGreen1", "assets/PNG/Lasers/laserGreen04.png");
+    this.loadImage("laserGreen2", "assets/PNG/Lasers/laserGreen12.png");
+    this.loadImage("laserRed1", "assets/PNG/Lasers/laserRed02.png");
+    this.loadImage("laserRed2", "assets/PNG/Lasers/laserRed06.png");
+    this.loadImage("shieldPower", "assets/PNG/Power-ups/powerupYellow_shield.png");
+    this.loadImage("boltPower", "assets/PNG/Power-ups/powerupGreen_bolt.png");
 
-    this.images["spacecraftSmallDamage"] = new Image();
-    this.images["spacecraftSmallDamage"].src = "assets/PNG/Damage/playerShip2_damage1.png";
-    this.images["spacecraftMediumDamage"] = new Image();
-    this.images["spacecraftMediumDamage"].src = "assets/PNG/Damage/playerShip2_damage2.png";
-    this.images["spacecraftBigDamage"] = new Image();
-    this.images["spacecraftBigDamage"].src = "assets/PNG/Damage/playerShip2_damage3.png";
-
-    this.images["shield1"] = new Image();
-    this.images["shield1"].src = "assets/PNG/Effects/shield1.png";
-    this.images["shield2"] = new Image();
-    this.images["shield2"].src = "assets/PNG/Effects/shield2.png";
-    this.images["shield3"] = new Image();
-    this.images["shield3"].src = "assets/PNG/Effects/shield3.png";
-
-    this.images["background"] = new Image();
-    this.images["background"].src = "assets/Backgrounds/blueBig.png";
-
-    this.images["laserBlue1"] = new Image();
-    this.images["laserBlue1"].src = "assets/PNG/Lasers/laserBlue02.png";
-    this.images["laserBlue2"] = new Image();
-    this.images["laserBlue2"].src = "assets/PNG/Lasers/laserBlue06.png";
-    this.images["laserGreen1"] = new Image();
-    this.images["laserGreen1"].src = "assets/PNG/Lasers/laserGreen04.png";
-    this.images["laserGreen2"] = new Image();
-    this.images["laserGreen2"].src = "assets/PNG/Lasers/laserGreen12.png";
-    this.images["laserRed1"] = new Image();
-    this.images["laserRed1"].src = "assets/PNG/Lasers/laserRed02.png";
-    this.images["laserRed2"] = new Image();
-    this.images["laserRed2"].src = "assets/PNG/Lasers/laserRed06.png";
-
-    // power ups
-    this.images["shieldPower"] = new Image();
-    this.images["shieldPower"].src = "assets/PNG/Power-ups/powerupYellow_shield.png";
-    this.images["boltPower"] = new Image();
-    this.images["boltPower"].src = "assets/PNG/Power-ups/powerupGreen_bolt.png";
-
-    // explosions by Ville Seppanen, http://villeseppanen.com
-    for (var i = 0; i < 21; i++) {
-      this.images["explosion" + i] = new Image();
-      this.images["explosion" + i].src = "assets/PNG/Effects/explosion" + i + ".png";
+    // Load explosions
+    for (let i = 0; i < 21; i++) {
+      this.loadImage("explosion" + i, "assets/PNG/Effects/explosion" + i + ".png");
     }
+    this.loadImage("laserBlueExplosion1", "assets/PNG/Lasers/laserBlue09.png");
+    this.loadImage("laserBlueExplosion2", "assets/PNG/Lasers/laserBlue08.png");
+    this.loadImage("laserGreenExplosion1", "assets/PNG/Lasers/laserGreen15.png");
+    this.loadImage("laserGreenExplosion2", "assets/PNG/Lasers/laserGreen14.png");
+    this.loadImage("laserRedExplosion1", "assets/PNG/Lasers/laserRed09.png");
+    this.loadImage("laserRedExplosion2", "assets/PNG/Lasers/laserRed08.png");
 
-    this.images["laserBlueExplosion1"] = new Image();
-    this.images["laserBlueExplosion1"].src = "assets/PNG/Lasers/laserBlue09.png";
-    this.images["laserBlueExplosion2"] = new Image();
-    this.images["laserBlueExplosion2"].src = "assets/PNG/Lasers/laserBlue08.png";
+    // Load enemy images
+    this.loadImage("enemyBlue", "assets/PNG/Enemies/purple.png");
+    this.loadImage("enemyRed", "assets/PNG/Enemies/red.png");
+    this.loadImage("enemyGreen", "assets/PNG/Enemies/green.png");
+    this.loadImage("enemyBlack", "assets/PNG/Enemies/yellow.png");
 
-    this.images["laserGreenExplosion1"] = new Image();
-    this.images["laserGreenExplosion1"].src = "assets/PNG/Lasers/laserGreen15.png";
-    this.images["laserGreenExplosion2"] = new Image();
-    this.images["laserGreenExplosion2"].src = "assets/PNG/Lasers/laserGreen14.png";
+    // Load score panel images
+    this.loadImage("livesRemaining", "assets/PNG/UI/playerLife.png");
+    this.loadImage("pauseIcon", "assets/PNG/UI/pauseButton.png");
+    this.loadImage("resumeIcon", "assets/PNG/UI/resumeButton.png");
 
-    this.images["laserRedExplosion1"] = new Image();
-    this.images["laserRedExplosion1"].src = "assets/PNG/Lasers/laserRed09.png";
-    this.images["laserRedExplosion2"] = new Image();
-    this.images["laserRedExplosion2"].src = "assets/PNG/Lasers/laserRed08.png";
-
-    // enemies
-    this.images["enemyBlue"] = new Image();
-    this.images["enemyBlue"].src = "assets/PNG/Enemies/purple.png";
-    this.images["enemyRed"] = new Image();
-    this.images["enemyRed"].src = "assets/PNG/Enemies/red.png";
-    this.images["enemyGreen"] = new Image();
-    this.images["enemyGreen"].src = "assets/PNG/Enemies/green.png";
-    this.images["enemyBlack"] = new Image();
-    this.images["enemyBlack"].src = "assets/PNG/Enemies/yellow.png";
-
-    // score panel
-    this.images["livesRemaining"] = new Image();
-    this.images["livesRemaining"].src = "assets/PNG/UI/playerLife.png";
-
-    // icons by Gregor Črešnar
-    this.images["pauseIcon"] = new Image();
-    this.images["pauseIcon"].src = "assets/PNG/UI/pauseButton.png";
-    this.images["resumeIcon"] = new Image();
-    this.images["resumeIcon"].src = "assets/PNG/UI/resumeButton.png";
-
-    this.loadSounds()
+    // Load sounds
+    this.loadSound("shieldUp", "assets/Bonus/sfx_shieldUp.ogg");
+    this.loadSound("shieldDown", "assets/Bonus/sfx_shieldDown.ogg");
+    this.loadSound("laserPlayer", "assets/Bonus/sfx_laser1.ogg");
+    this.loadSound("laserEnemy", "assets/Bonus/sfx_laser2.ogg");
+    this.loadSound("gameOver", "assets/Bonus/sfx_lose.ogg");
+    this.loadSound("explosion", "assets/Bonus/explodemini.wav");
   }
 
-  loadSounds() {
-    this.sounds["shieldUp"] = new Audio("assets/Bonus/sfx_shieldUp.ogg");
-    this.sounds["shieldDown"] = new Audio("assets/Bonus/sfx_shieldDown.ogg");
-    this.sounds["laserPlayer"] = new Audio("assets/Bonus/sfx_laser1.ogg");
-    this.sounds["laserEnemy"] = new Audio("assets/Bonus/sfx_laser2.ogg");
-    this.sounds["gameOver"] = new Audio("assets/Bonus/sfx_lose.ogg");
-
-    //Sound (c) by Michel Baradari apollo-music.de
-    this.sounds["explosion"] = new Audio("assets/Bonus/explodemini.wav");
+  loadImage(name, src) {
+    const image = new Image();
+    image.src = src;
+    this.images[name] = image;
   }
 
-
+  loadSound(name, src) {
+    const sound = new Audio(src);
+    this.sounds[name] = sound;
+  }
 }
+
+
+
 
 
 class CollisionManager {
   constructor(game) {
     this.game = game;
     this.spaceship = game.spaceship;
+    this.aliens = game.aliens;
     this.collisionDelayTimer = 0;
   }
 
   resolveCollision(delta) {
     this.collisionDelayTimer += delta;
-    this.shipWithWall();
+
+    if (this.collisionDelayTimer > 10) {
+      this.checkSpaceShipWithAliens();
+      this.checkSpaceshipBulletsWithAliens()
+      this.checkAlienBulletsWithSpaceship();
+      this.collisionDelayTimer = 0;
+  }
+
+  this.shipWithWall();
   }
 
   shipWithWall() {
@@ -609,6 +603,141 @@ class CollisionManager {
       this.spaceship.y = this.game.canvas.height - this.spaceship.height - 5;
     }
   }
+
+  
+
+
+  checkAlienBulletsWithSpaceship () {
+    for (let i = 0; i < this.aliens.length; i++) {
+
+        if (this.aliens[i].type === "enemyBlue" || this.aliens[i].type === "enemyRed") {
+            // blue and red enemies have no bullets
+            continue;
+        }
+
+        for (let j = 0; j < this.aliens[i].bullets.length; j++) {
+            if (this.aliens[i].bullets[j].hasFire()) {
+                continue;
+            }
+            if (this.rectRectCollision(this.spaceship, this.aliens[i].bullets[j])) {
+                if (this.circleRectCollision(this.spaceship, this.aliens[i].bullets[j])) {
+                    this.aliens[i].bullets[j].explode();
+
+                    if (!this.spaceship.isShieldUp) {
+                        this.spaceship.livesRemaining--;
+                    }
+                }
+            }
+        }
+    }
+};
+
+
+checkSpaceshipBulletsWithAliens() {
+  for (let i = 0; i < this.spaceship.bullets.length; i++) {
+      // ignore bullets that have already hit a target
+      if (this.spaceship.bullets[i].hasFire()) {
+          continue;
+      }
+
+      // check bullets/enemies
+      for (let j = 0; j < this.aliens.length; j++) {
+          if (this.aliens[j].hasFire()) {
+              continue;
+          }
+
+
+          if (this.rectRectCollision(this.aliens[j], this.spaceship.bullets[i])) {
+              this.aliens[j].explode();
+              this.spaceship.bullets[i].explode();
+              this.spaceship.score += 20;
+          }
+      }
+  }
+};
+
+  checkSpaceShipWithAliens(){
+    for (let i = 0; i < this.aliens.length; i++) {
+      if (!this.aliens[i].hasFire() && this.rectRectCollision(this.spaceship, this.aliens[i])) {
+          if (this.circleRectCollision(this.spaceship, this.aliens[i])) {
+              this.resolveElasticCollision(this.spaceship, this.aliens[i]);
+              // blow up the enemy
+              this.aliens[i].explode();
+
+              if (!this.spaceship.isShieldUp) {
+                  this.spaceship.livesRemaining--;
+              } else {
+                  this.spaceship.score += 20;
+              }
+          }
+      }
+  }
+  }
+
+  rectRectCollision(rect1, rect2){
+    return rect1.x < rect2.x + rect2.width
+          && rect1.x + rect1.width > rect2.x
+          && rect1.y < rect2.y + rect2.height
+          && rect1.height + rect1.y > rect2.y;
+  };
+
+
+  
+  
+  circleCircleCollision(circle1, circle2) {
+      let distanceX = circle1.xCentre - circle2.xCentre;
+      let distanceY = circle1.yCentre - circle2.yCentre;
+      let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+  
+      return circle1.radius + circle2.radius > distance;
+  };
+
+
+  circleRectCollision (circle, rect) {
+    let distanceX = Math.abs(circle.xCentre - rect.x - rect.width / 2);
+    let distanceY = Math.abs(circle.yCentre - rect.y - rect.height / 2);
+
+    if (distanceX > (rect.width / 2 + circle.radius)) {
+        return false;
+    }
+
+    if (distanceY > (rect.height / 2 + circle.radius)) {
+        return false;
+    }
+ 
+    if (distanceX <= (rect.width / 2)) {
+        return true;
+    }
+
+    if (distanceY <= (rect.height / 2)) {
+        return true;
+    }
+
+    let dx = distanceX - rect.width / 2;
+    let dy = distanceY - rect.height / 2;
+
+    return dx * dx + dy * dy <= (circle.radius * circle.radius);
+};
+
+
+ resolveElasticCollision(body1, body2) {
+  let tempVelX = body1.xVelocity;
+  let tempVelY = body1.yVelocity;
+  let totalMass = body1.mass + body2.mass;
+
+  // velocity after elastic collision, floor used to simplify the implementation
+  body1.xVelocity = Math.floor((body1.xVelocity * (body1.mass - body2.mass)
+      + 2 * body2.mass * body2.xVelocity) / totalMass);
+
+  body1.yVelocity = Math.floor((body1.yVelocity * (body1.mass - body2.mass)
+      + 2 * body2.mass * body2.yVelocity) / totalMass);
+
+  body2.xVelocity = Math.floor((body2.xVelocity * (body2.mass - body1.mass)
+      + 2 * body1.mass * tempVelX) / totalMass);
+
+  body2.yVelocity = Math.floor((body2.yVelocity * (body2.mass - body1.mass)
+      + 2 * body1.mass * tempVelY) / totalMass);
+};
 
 }
 
@@ -775,7 +904,7 @@ class Alien {
       return;
     } else if (this.isExploded && this.bullets.length !== 0) {
       // make sure bullets move even after enemy blew up
-      for (var i = 0; i < this.bullets.length; i++) {
+      for (let i = 0; i < this.bullets.length; i++) {
         this.bullets[i].update(delta);
       }
 
@@ -1079,7 +1208,7 @@ class Alien {
     this.assets.sounds["explosion"].currentTime = 0;
   }
 
-  isHit(){
+  hasFire(){
     return this.isExploded || this.isExploding;
   }
 }
