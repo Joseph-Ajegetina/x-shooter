@@ -1,6 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Poppins:wght@100;200;300;400&display=swap');
+
 body {
   background: url("../assets/Backgrounds/background.jpeg") repeat;
   margin: 0;
+
+  font-family: 'Cinzel Decorative', cursive;
 }
 
 #menu-page, #high-scores-page, #about-page, #canvas, #game-over-box {

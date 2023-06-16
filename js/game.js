@@ -127,7 +127,7 @@ class SpaceShip {
     this.bulletDelayTimer = 0;
     this.bullets = [];
     this.bulletCleanUpDelayTimer = 0;
-
+    
     this.livesRemaining = 3;
     this.score = 0;
   }
@@ -155,10 +155,10 @@ class SpaceShip {
     // fire normal bullet every second, powered up bullet every 0.3 second
     this.bulletDelayTimer += delta;
 
-    if (this.controller.keys['Space'] && this.bulletDelayTimer > 500) {
+    if (this.controller.keys['Space'] && !this.boltPower && this.bulletDelayTimer > 500) {
       this.shoot("blue");
       this.bulletDelayTimer = 0;
-    } else if (this.controller.keys['Space'] && this.bulletDelayTimer > 300) {
+    } else if (this.controller.keys['Space'] && this.boltPower && this.bulletDelayTimer > 300) {
       this.shoot("green");
       this.bulletDelayTimer = 0;
     }
@@ -991,12 +991,9 @@ class GamePlayManager {
     this.aliens = game.aliens;
     this.spaceship = game.spaceship;
 
-    this.aliensSpawnDelay = 5000;
+    this.aliensSpawnDelay = 2500;
     this.aliensSpawnDelayMin = 1000; // max difficulty
     this.aliensSpawnDelayTimer = 0;
-
-    this.powerUpsSpawnDelay = 20000;
-    this.powerUpsSpawnDelayTimer = 0;
 
     this.cleanUpDelay = 15000;
     this.cleanUpDelayTimer = 0;
