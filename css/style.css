@@ -5,15 +5,17 @@ body {
 
 #menu-page, #high-scores-page, #about-page, #canvas, #game-over-box {
   position: absolute;
-  background: url("../assets/Backgrounds/blue.png") repeat;
+  background: url("../assets/Backgrounds/gameplay.png") no-repeat center center fixed;
   color: #00a8b8;
   width: 600px;
   height: 700px;
   text-align: center;
+  border: 1px solid green;
 }
 
 h1 {
   font-size: 3.8em;
+  color: #4CAF50;
 }
 
 ul {
@@ -82,13 +84,47 @@ a:hover {
   background: url("../assets/Backgrounds/background.jpeg") repeat;
 }
 
-h1 {
-  color: white;
-  font-size: 36px;
-  margin-bottom: 20px;
-}
 
 #start-button {
   padding: 10px 20px;
   font-size: 24px;
+}
+
+.text{
+  font-size: 2rem;
+}
+
+.description {
+  font-size: 1rem;
+}
+
+.exit {
+  display: block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  border: none;
+  background-color: #4CAF50;
+  color: #fff;
+  cursor: pointer;
+  margin: 40px auto;
+}
+
+.exit:hover {
+  background-color: #45a049;
+}
+
+.exit:active {
+  background-color: #3e8e41;
+}
+
+
+input[type="text"] {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
 }
