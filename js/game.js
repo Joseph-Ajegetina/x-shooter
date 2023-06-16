@@ -18,7 +18,7 @@ class Game {
     this.currentTime = 0;
     this.delta = 0;   // used to track the elapsed time after each frame 
 
-    this.frameId = 0; 
+    this.frameId = 0;
   }
 
   new() {
@@ -51,7 +51,7 @@ class Game {
       this.render();
 
       //  ensures that the timing of the game loop remains consistent by accounting for any excess time that may have accumulated.
-      this.lastTime = this.currentTime - (this.delta % this.interval); 
+      this.lastTime = this.currentTime - (this.delta % this.interval);
     }
   };
 
@@ -155,10 +155,10 @@ class SpaceShip {
     // fire normal bullet every second, powered up bullet every 0.3 second
     this.bulletDelayTimer += delta;
 
-    if (this.controller.keys['Space'] && !this.isBoltPower && this.bulletDelayTimer > 500) {
+    if (this.controller.keys['Space'] && this.bulletDelayTimer > 500) {
       this.shoot("blue");
       this.bulletDelayTimer = 0;
-    } else if (this.controller.keys['Space'] && this.isBoltPower && this.bulletDelayTimer > 300) {
+    } else if (this.controller.keys['Space'] && this.bulletDelayTimer > 300) {
       this.shoot("green");
       this.bulletDelayTimer = 0;
     }
@@ -215,8 +215,8 @@ class SpaceShip {
   }
 
   newPos() {
-    const yvBelowMax = Math.abs(this.yv) <= this.maxVelocity 
-    const xvBelowMax = Math.abs(this.xv) <= this.maxVelocity 
+    const yvBelowMax = Math.abs(this.yv) <= this.maxVelocity
+    const xvBelowMax = Math.abs(this.xv) <= this.maxVelocity
     // start moving up
     if (this.controller.keys.ArrowUp && this.yv === 0 && !this.isUpWall) {
       this.yv -= this.accelerateFactor;
@@ -269,7 +269,7 @@ class SpaceShip {
 
       this.assets.sounds["laserPlayer"].play();
       this.assets.sounds["laserPlayer"].currentTime = 0;
-    } 
+    }
   }
 
 }
@@ -410,8 +410,8 @@ class Alien {
 
 
   updateDirection() {
-    const yvBelowMax = Math.abs(this.yv) <= this.maxVelocity 
-    const xvBelowMax = Math.abs(this.xv) <= this.maxVelocity 
+    const yvBelowMax = Math.abs(this.yv) <= this.maxVelocity
+    const xvBelowMax = Math.abs(this.xv) <= this.maxVelocity
     // start moving up
     if (this.goUp && this.yv === 0) {
       this.yv -= this.accelerateFactor;
@@ -723,11 +723,6 @@ class Bullet {
           this.x, this.y);
         ctx.drawImage(this.assets.images["laserBlue2"],
           this.x, this.y);
-      } else if (this.color === "green") {
-        ctx.drawImage(this.assets.images["laserGreen1"],
-          this.x, this.y);
-        ctx.drawImage(this.assets.images["laserGreen2"],
-          this.x, this.y);
       } else if (this.color === "red") {
         ctx.drawImage(this.assets.images["laserRed1"],
           this.x, this.y);
@@ -740,9 +735,6 @@ class Bullet {
       // draw explosion
       if (this.color === "blue") {
         ctx.drawImage(this.assets.images["laserBlueExplosion" + this.explosionIndex],
-          this.x - this.width, this.y);
-      } else if (this.color === "green") {
-        ctx.drawImage(this.assets.images["laserGreenExplosion" + this.explosionIndex],
           this.x - this.width, this.y);
       } else if (this.color === "red") {
         ctx.drawImage(this.assets.images["laserRedExplosion" + this.explosionIndex],
@@ -880,9 +872,7 @@ class CollisionManager {
           if (this.circleRectCollision(this.spaceship, this.aliens[i].bullets[j])) {
             this.aliens[i].bullets[j].explode();
 
-            if (!this.spaceship.isShieldUp) {
-              this.spaceship.livesRemaining--;
-            }
+            this.spaceship.livesRemaining--;
           }
         }
       }
@@ -920,12 +910,7 @@ class CollisionManager {
           this.resolveElasticCollision(this.spaceship, this.aliens[i]);
           // blow up the enemy
           this.aliens[i].explode();
-
-          if (!this.spaceship.isShieldUp) {
-            this.spaceship.livesRemaining--;
-          } else {
-            this.spaceship.score += 20;
-          }
+          this.spaceship.livesRemaining--;
         }
       }
     }
@@ -1131,21 +1116,11 @@ class AssetsManager {
   loadAll() {
     // Load images
     this.loadImage("spaceship", "assets/PNG/playership.png");
-    this.loadImage("spacecraftSmallDamage", "assets/PNG/Damage/playerShip2_damage1.png");
-    this.loadImage("spacecraftMediumDamage", "assets/PNG/Damage/playerShip2_damage2.png");
-    this.loadImage("spacecraftBigDamage", "assets/PNG/Damage/playerShip2_damage3.png");
-    this.loadImage("shield1", "assets/PNG/Effects/shield1.png");
-    this.loadImage("shield2", "assets/PNG/Effects/shield2.png");
-    this.loadImage("shield3", "assets/PNG/Effects/shield3.png");
     this.loadImage("background", "assets/Backgrounds/gameplay.png");
     this.loadImage("laserBlue1", "assets/PNG/Lasers/laserBlue02.png");
     this.loadImage("laserBlue2", "assets/PNG/Lasers/laserBlue06.png");
-    this.loadImage("laserGreen1", "assets/PNG/Lasers/laserGreen04.png");
-    this.loadImage("laserGreen2", "assets/PNG/Lasers/laserGreen12.png");
     this.loadImage("laserRed1", "assets/PNG/Lasers/laserRed02.png");
     this.loadImage("laserRed2", "assets/PNG/Lasers/laserRed06.png");
-    this.loadImage("shieldPower", "assets/PNG/Power-ups/powerupYellow_shield.png");
-    this.loadImage("boltPower", "assets/PNG/Power-ups/powerupGreen_bolt.png");
 
     // Load explosions
     for (let i = 0; i < 21; i++) {
@@ -1153,8 +1128,6 @@ class AssetsManager {
     }
     this.loadImage("laserBlueExplosion1", "assets/PNG/Lasers/laserBlue09.png");
     this.loadImage("laserBlueExplosion2", "assets/PNG/Lasers/laserBlue08.png");
-    this.loadImage("laserGreenExplosion1", "assets/PNG/Lasers/laserGreen15.png");
-    this.loadImage("laserGreenExplosion2", "assets/PNG/Lasers/laserGreen14.png");
     this.loadImage("laserRedExplosion1", "assets/PNG/Lasers/laserRed09.png");
     this.loadImage("laserRedExplosion2", "assets/PNG/Lasers/laserRed08.png");
 
@@ -1166,12 +1139,8 @@ class AssetsManager {
 
     // Load score panel images
     this.loadImage("livesRemaining", "assets/PNG/UI/playerLife.png");
-    this.loadImage("pauseIcon", "assets/PNG/UI/pauseButton.png");
-    this.loadImage("resumeIcon", "assets/PNG/UI/resumeButton.png");
 
     // Load sounds
-    this.loadSound("shieldUp", "assets/Bonus/sfx_shieldUp.ogg");
-    this.loadSound("shieldDown", "assets/Bonus/sfx_shieldDown.ogg");
     this.loadSound("laserPlayer", "assets/Bonus/sfx_laser1.ogg");
     this.loadSound("laserEnemy", "assets/Bonus/sfx_laser2.ogg");
     this.loadSound("gameOver", "assets/Bonus/sfx_lose.ogg");
