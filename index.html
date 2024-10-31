@@ -25,18 +25,31 @@
         </div>
         <div id="high-scores-page">
             <h1>High Scores</h1>
-            <a class="back-button text" href="#">Menu</a>
+            <a class="back-button text" href="#">⬅</a>
             <ul id="scores-ul">
             </ul>
         </div>
         <div id="about-page">
-            <h1>About X-Shooter</h1>
-            <a class="back-button text" href="#">Menu</a>
-            <h2>HOW TO PLAY</h2>
-            <p  class="description">
-                The arrow keys can be used to control the rocket, movement from left to right;
-                Use the spacebar to shoot the aliens.
-            </p>
+            <h1>About</h1>
+            <a class="back-button text" href="#">⬅</a>
+            <h2>Description</h2>
+            <p><strong>X-Shooter</strong> is an action-packed shooter game where players navigate through levels, defeat enemies, and aim for the highest score.</p>
+   
+            <h2>How to Play</h2>
+            <div class="controls">
+                <div class="movement">
+                    <div class="arrows">
+                        <span class="arrow">⬅️</span><span class="arrow">⬆️</span><span class="arrow">⬇️</span><span class="arrow">➡️</span>
+                        <p>or</p>
+                        <span class="wasd">W</span><span class="wasd">A</span><span class="wasd">S</span><span class="wasd">D</span>
+                    </div>
+                    <p>Use Arrow Keys or WASD to Move</p>
+                </div>
+                <div class="shoot">
+                    <span class="spacebar">␣</span>
+                    <p>Press Spacebar to Shoot</p>
+                </div>
+            </div>
         </div>
         <canvas id="canvas" width="600" height="700">
         </canvas>
@@ -44,7 +57,7 @@
             <h1>Game Over</h1>
             <p id="game-over-p" class="text">Score: <span id="score-field"></span></p>
             <input type="text" id="name-field" name="name-field" placeholder="Your name" pattern="^[a-zA-Z]+$" />
-            <input type="button" class="exit"  id="exit-button" name="exit-button" value="Return" />
+            <input type="button" class="exit"  id="exit-button" name="exit-button" value="⬅" />
         </div>
     </div>
 </body>

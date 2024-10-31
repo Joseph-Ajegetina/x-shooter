@@ -44,7 +44,7 @@ class Game {
         this.collisionManager.resolveCollision(this.delta);
       }
 
-      if (this.spaceship.livesRemaining < 0) {
+      if (this.spaceship.livesRemaining == 0) {
         this.gameOver();
       }
 
