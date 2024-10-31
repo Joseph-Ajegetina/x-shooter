@@ -1,4 +1,4 @@
-# X-Shooter
+# [X-Shooter](https://joseph-ajegetina.github.io/x-shooter/)
 
 **X-Shooter** is an action-packed shooter game where players navigate through levels, defeat enemies, and aim for the highest score. Designed for players of all ages, X-Shooter combines strategic gameplay with exciting visuals and sounds.
 
@@ -33,7 +33,7 @@ In X-Shooter, players take control of a spaceship (or character) and navigate th
 
 ## How to Play
 
-1. **Start the Game**
+1. **Start the Game**:  visit [x-shooter](https://joseph-ajegetina.github.io/x-shooter/)
 2. **Objective**: Navigate through levels, destroy enemies, and avoid collisions.
 3. **Power-ups**: Collect power-ups for weapon upgrades and health boosts.
 4. **Score Points**: Defeat enemies and complete levels to earn points.
