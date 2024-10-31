@@ -2,7 +2,8 @@
 
 **X-Shooter** is an action-packed shooter game where players navigate through levels, defeat enemies, and aim for the highest score. Designed for players of all ages, X-Shooter combines strategic gameplay with exciting visuals and sounds.
 
-![X-Shooter Screenshot](path/to/screenshot.png)  
+![Screenshot_20241031_080503](https://github.com/user-attachments/assets/7757b9c0-66bf-4518-ae7b-8ebb505bd1a3)
+
 
 ---
 
